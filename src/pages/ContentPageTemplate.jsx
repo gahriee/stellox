@@ -138,7 +138,7 @@ function ContentPageTemplate({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.8 }} 
-            className="pl-6 mt-4 mb-6 text-sm sm:text-base md:text-lg text-white"
+            className="p-0 mt-4 mb-6 text-sm sm:text-base md:text-lg text-white"
           >
             {item.items.map((listItem, itemIndex) => (
               <li key={itemIndex} className="mb-3 pl-2 border-l-2 border-primary">
@@ -306,7 +306,7 @@ function ContentPageTemplate({
                     href={ref.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs sm:text-sm text-white hover:text-primary transition-colors font-mono truncate"
+                    className="text-xs sm:text-sm text-white hover:text-primary transition-colors font-mono truncate underline italic"
                   >
                     {ref.text}
                   </a>
