@@ -1,10 +1,11 @@
 // File: ContentPageTemplate.jsx
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import bg from '../assets/background.gif';
-import logo from '../assets/logo.png';
+import bg from '../assets/background.gif'; 
+import logo from '../assets/logo.png'; 
 
-function TypewriterText({ text, delay = 0, speed = 50, className = "" }) {
+// --- Utility: Typewriter Component ---
+function TypewriterText({ text, delay = 0, speed = 40, className = "" }) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startTyping, setStartTyping] = useState(false);
@@ -13,7 +14,6 @@ function TypewriterText({ text, delay = 0, speed = 50, className = "" }) {
     const delayTimeout = setTimeout(() => {
       setStartTyping(true);
     }, delay * 1000);
-
     return () => clearTimeout(delayTimeout);
   }, [delay]);
 
@@ -23,67 +23,33 @@ function TypewriterText({ text, delay = 0, speed = 50, className = "" }) {
         setDisplayedText(text.substring(0, currentIndex + 1));
         setCurrentIndex((prev) => prev + 1);
       }, speed);
-      
       return () => clearTimeout(timeout);
     }
   }, [currentIndex, text, speed, startTyping]);
 
-  // Function to parse HTML tags in text
   const parseHtmlTags = (htmlText) => {
-    // Split by bold, italic, center, br tags, and tab characters
     const parts = htmlText.split(/(<b>|<\/b>|<i>|<\/i>|<center>|<\/center>|<br>|\t)/);
     let isBold = false;
     let isItalic = false;
     let isCenter = false;
 
     return parts.map((part, index) => {
-      // --- Toggle Flags ---
-      if (part === '<b>') {
-        isBold = true;
-        return null;
-      }
-      if (part === '</b>') {
-        isBold = false;
-        return null;
-      }
-      if (part === '<i>') {
-        isItalic = true;
-        return null;
-      }
-      if (part === '</i>') {
-        isItalic = false;
-        return null;
-      }
-      if (part === '<center>') {
-        isCenter = true;
-        return null;
-      }
-      if (part === '</center>') {
-        isCenter = false;
-        return null;
-      }
-      
-      // --- Direct Renders ---
-      if (part === '<br>') {
-        return <br key={index} />;
-      }
-      if (part === '\t') {
-        // Renders a generic tab space
-        return <span key={index} className="inline-block w-8"></span>; 
-      }
+      if (part === '<b>') { isBold = true; return null; }
+      if (part === '</b>') { isBold = false; return null; }
+      if (part === '<i>') { isItalic = true; return null; }
+      if (part === '</i>') { isItalic = false; return null; }
+      if (part === '<center>') { isCenter = true; return null; }
+      if (part === '</center>') { isCenter = false; return null; }
+      if (part === '<br>') { return <br key={index} />; }
+      if (part === '\t') { return <span key={index} className="inline-block w-8"></span>; }
 
-      // --- Text Content ---
       if (part) {
         let classes = "";
-        if (isBold) classes += "font-bold ";
+        if (isBold) classes += "font-bold text-primary "; 
         if (isItalic) classes += "italic ";
         if (isCenter) classes += "block text-center w-full "; 
 
-        return (
-          <span key={index} className={classes}>
-            {part}
-          </span>
-        );
+        return <span key={index} className={classes}>{part}</span>;
       }
       return null;
     }).filter(Boolean);
@@ -94,14 +60,15 @@ function TypewriterText({ text, delay = 0, speed = 50, className = "" }) {
       {parseHtmlTags(displayedText)}
       <motion.span
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        animate={{ opacity: [0, 1, 0] }}
         transition={{ repeat: Infinity, duration: 0.8 }}
-        className="ml-1 inline-block w-1 h-5 bg-primary align-middle"
+        className="ml-1 inline-block w-2 h-5 bg-primary align-middle shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)]"
       />
     </p>
   );
 }
 
+// --- Main Template Component ---
 function ContentPageTemplate({
   title,
   header,
@@ -111,24 +78,22 @@ function ContentPageTemplate({
   imagePositions = { img1: 'top-left', img2: 'bottom-right' }
 }) {
   const [isLoading, setIsLoading] = useState(true);
-  const [bgLoaded, setBgLoaded] = useState(false);
-
+  
   useEffect(() => {
     const img = new Image();
     img.src = bg;
     img.onload = () => {
-      setBgLoaded(true);
-      setTimeout(() => setIsLoading(false), 300);
+      // ADJUSTED: 1500ms (1.5s) - A balanced loading time
+      setTimeout(() => setIsLoading(false), 1500);
     };
   }, []);
 
-
   const getImageClasses = (positionKey) => {
     const positions = {
-      'top-left': "-top-6 sm:-top-10 md:-top-12 -left-6 sm:-left-8 md:-left-12",
-      'top-right': "-top-6 sm:-top-10 md:-top-12 -right-6 sm:-right-8 md:-right-12",
-      'bottom-left': "-bottom-6 sm:-bottom-10 md:-bottom-12 -left-6 sm:-left-8 md:-left-12",
-      'bottom-right': "-bottom-6 sm:-bottom-10 md:-bottom-12 -right-6 sm:-right-8 md:-right-12"
+      'top-left': "-top-8 -left-8",
+      'top-right': "-top-8 -right-8",
+      'bottom-left': "-bottom-8 -left-8",
+      'bottom-right': "-bottom-8 -right-8"
     };
     return positions[imagePositions[positionKey]] || positions[positionKey];
   };
@@ -138,19 +103,20 @@ function ContentPageTemplate({
       // Image Object
       if (typeof item === 'object' && item.src) {
         const widthClass = item.size === 'half' ? 'w-1/2' : 'w-full';
-        
         return (
           <motion.div
             key={`image-${index}`}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 1.5 }}
-            className="my-6 flex justify-center"
+            initial={{ opacity: 0, scaleY: 0 }}
+            animate={{ opacity: 1, scaleY: 1 }}
+            transition={{ duration: 0.5, delay: 1.2 }} // Moderate delay
+            className="my-8 flex justify-center relative group"
           >
+            {/* Tech Border Effect */}
+            <div className="absolute inset-0 border border-primary/40 opacity-50 rounded-lg pointer-events-none"></div>
             <img 
               src={item.src} 
               alt={item.alt || "Content"} 
-              className={`${widthClass} h-auto transition-all duration-300`}
+              className={`${widthClass} h-auto border-2 border-primary/30 shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)] bg-black/50 p-1`}
             />
           </motion.div>
         );
@@ -159,22 +125,22 @@ function ContentPageTemplate({
       // List Object
       if (typeof item === 'object' && item.type === 'list') {
         const ListComponent = item.ordered ? motion.ol : motion.ul;
-        
         return (
           <ListComponent
             key={`list-${index}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 1.1 }}
-            className={item.ordered ? "list-decimal pl-5 mt-2 text-sm sm:text-base md:text-lg text-gray-700" : "list-disc pl-10 mt-2 mb-4 text-sm sm:text-base md:text-lg text-gray-700"}
+            transition={{ duration: 0.5, delay: 0.8 }} 
+            className="pl-6 mt-4 mb-6 text-sm sm:text-base md:text-lg text-white"
           >
             {item.items.map((listItem, itemIndex) => (
-              <li key={itemIndex} className="mb-2 pl-2">
+              <li key={itemIndex} className="mb-3 pl-2 border-l-2 border-primary">
                 <TypewriterText 
                   text={listItem}
-                  delay={1.1 + (itemIndex * 0.2)} 
-                  speed={2}
-                  className="block text-justify text-secondary"
+                  // ADJUSTED: Staggered gently, speed increased to 10ms (readable but fast)
+                  delay={1.0 + (itemIndex * 0.3)} 
+                  speed={10} 
+                  className="block text-justify text-white/90 font-mono"
                 />
               </li>
             ))}
@@ -182,188 +148,179 @@ function ContentPageTemplate({
         );
       }
       
-      // Regular Paragraph String
+      // Regular Paragraph
       return (
         <TypewriterText 
           key={`text-${index}`}
           text={item}
-          delay={1.1} 
-          speed={2}
-          className="text-secondary mt-4 text-sm sm:text-base md:text-lg break-words mb-2 sm:mb-2 text-justify"
+          // ADJUSTED: Delay set to 1.0s so it doesn't clash with the title animation
+          delay={1.0} 
+          speed={5} // Kept super fast as requested
+          className="text-white/80 mt-4 text-sm sm:text-base md:text-lg break-words mb-4 text-justify font-sans leading-relaxed tracking-wide"
         />
       );
     });
   };
+
+  // --- LOADER: Hyperdrive Sequence ---
   if (isLoading) {
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900">
-      <div className="relative">
-        {/* Top Bracket */}
-        <motion.div 
-          initial={{ width: 0 }} 
-          animate={{ width: "100%" }} 
-          className="absolute -top-4 left-0 h-4 border-l-2 border-t-2 border-r-2 border-primary w-full" 
-        />
-        
-        {/* Center Content */}
-        <div className="flex items-center gap-4 px-8 py-4">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full"
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 overflow-hidden relative">
+        <div className="relative z-10 w-64 text-center">
+          <motion.div 
+            initial={{ width: 0 }} 
+            animate={{ width: "100%" }} 
+            // ADJUSTED: Duration matches the 1.5s timeout
+            transition={{ duration: 1.5 }}
+            className="h-1 bg-primary mb-4 shadow-[0_0_10px_currentColor] text-primary" 
           />
-          <div className="flex flex-col items-start">
-            <span className="text-white text-xl font-bold font-mono">SYSTEM_SYNC</span>
-            <span className="text-xs text-primary/70 font-mono">ESTABLISHING UPLINK...</span>
-          </div>
-        </div>
-
-        {/* Bottom Bracket */}
-        <motion.div 
-          initial={{ width: 0 }} 
-          animate={{ width: "100%" }} 
-          className="absolute -bottom-4 left-0 h-4 border-l-2 border-b-2 border-r-2 border-primary w-full" 
-        />
-      </div>
-    </div>
-  );
-}
-
-  return (
-    <div className="min-h-screen px-4 relative overflow-hidden">
-      <motion.img 
-        initial={{ scale: 1.1, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-        src={bg} 
-        alt="background" 
-        className="absolute top-0 left-0 object-cover -z-20 w-full h-full"
-      />
-
-      <motion.div 
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.5 }}
-        className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center justify-center z-10"
-      >
-        <motion.img 
-          whileHover={{ scale: 1.1, rotate: 5 }}
-          src={logo} 
-          alt="logo" 
-          className="h-12 w-12 sm:h-16 sm:w-16 md:h-18 md:w-18 lg:h-20 lg:w-20 object-cover rounded-full mr-3" 
-        />
-        <motion.h1 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="font-squartiqa text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-wide text-primary whitespace-nowrap"
-        >
-          ASTRION INC.
-        </motion.h1>
-      </motion.div>
-
-      <div className="max-w-3xl mx-auto flex flex-col items-center justify-center min-h-screen pb-20">
-        <div className="p-6 sm:p-8 md:p-12 w-full">
-          <motion.h1 
-            initial={{ y: -30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-squartiqa text-center text-primary mb-10 sm:mb-16 md:mb-20"
+          
+          <motion.h2
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 0.8, repeat: Infinity }}
+            className="text-primary font-mono text-xs tracking-[0.3em] mb-2"
           >
-            {title}
-          </motion.h1>
+            INITIALIZING STELLOX
+          </motion.h2>
+
+          <div className="flex justify-center gap-2">
+             {[...Array(3)].map((_, i) => (
+               <motion.div
+                key={i}
+                animate={{ height: [10, 30, 10] }}
+                transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.1 }}
+                className="w-2 bg-primary"
+               />
+             ))}
+          </div>
 
           <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="relative mb-8 bg-primary px-4 sm:px-6 md:px-8 py-8 sm:py-10 md:py-12 rounded-3xl font-inter shadow-xl border-2 border-transparent hover:border-white transition-all"
-            whileHover={{ 
-              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)",
-              y: -5
-            }}
-          >
-            <motion.img 
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ 
-                x: 0, 
-                opacity: 1,
-                y: [0, -10, 0]
-              }}
-              transition={{ 
-                duration: 0.7, 
-                delay: 0.7,
-                y: {
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }
-              }}
-              className={`w-16 sm:w-24 md:w-32 absolute ${getImageClasses('img1')}`} 
-              src={images[0]} 
-              alt="Decorative element 1" 
-              whileHover={{ rotate: 10, scale: 1.1 }}
-            />
-            
-            <motion.img 
-              initial={{ x: 50, opacity: 0 }}
-              animate={{ 
-                x: 0, 
-                opacity: 1,
-                y: [0, -10, 0]
-              }}
-              transition={{ 
-                duration: 0.7, 
-                delay: 0.9,
-                y: {
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }
-              }}
-              className={`w-16 sm:w-24 md:w-32 absolute ${getImageClasses('img2')}`} 
-              src={images[1]} 
-              alt="Decorative element 2" 
-              whileHover={{ rotate: -10, scale: 1.1 }}
-            />
-
-            <div className="text-secondary text-lg sm:text-xl md:text-2xl font-bold text-gray-800 break-words mb-4 sm:mb-6 min-h-[2em] text-center font-mokoto">
-              <TypewriterText 
-                text={header} 
-                delay={0.8} 
-                speed={5} 
-              />
-            </div>
-            
-            {renderContent()}
-            <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 3.0 }}
-                className="mt-6 text-xs sm:text-sm md:text-base text-gray-600 italic break-words text-justify"
-              >
-                Reference:
-              </motion.p>
-            {references.map((ref, index) => (
-              <motion.p 
-                key={index}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 3.0 }}
-                className="mb-2 text-xs sm:text-sm md:text-base text-gray-600 italic break-words text-justify"
-              >
-                <a
-                  href={ref.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline text-blue-600 hover:text-blue-800 transition-colors"
-                >
-                  {ref.text}
-                </a>
-              </motion.p>
-            ))}
-          </motion.div>
+            initial={{ width: 0 }} 
+            animate={{ width: "100%" }} 
+            transition={{ duration: 1.5 }}
+            className="h-1 bg-primary mt-4 shadow-[0_0_10px_currentColor] text-primary" 
+          />
         </div>
+      </div>
+    );
+  }
+
+  // --- COMPONENT RENDER ---
+  return (
+    <div className="min-h-screen px-4 relative overflow-hidden font-sans text-gray-200">
+      
+      {/* Background Image Restored */}
+      <motion.img 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5 }}
+        src={bg} 
+        alt="Background" 
+        className="fixed top-0 left-0 object-cover -z-20 w-full h-full"
+      />
+      
+      {/* Overlay to ensure text readability on user BG */}
+      <div className="fixed inset-0 bg-black/60 -z-10"></div>
+
+      {/* Floating Logo / Header */}
+      <motion.div 
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="absolute top-6 left-6 z-20 flex items-center gap-3"
+      >
+        <motion.div 
+          className="w-10 h-10 border-2 border-primary rounded-full flex items-center justify-center p-1 bg-black/50 backdrop-blur-sm"
+          whileHover={{ rotate: 180 }}
+          transition={{ duration: 0.5 }}
+        >
+          <img src={logo} alt="emblem" className="w-full h-full object-contain filter drop-shadow-[0_0_5px_currentColor] text-primary" />
+        </motion.div>
+        <div className="flex flex-col">
+           <span className="text-primary font-bold tracking-[0.1em] text-md">STELLOX INC.</span>
+        </div>
+      </motion.div>
+
+      {/* Main Content Card */}
+      <div className="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-screen py-20 relative z-10">
+        
+        {/* Title Crawl Style */}
+        <motion.h1 
+          initial={{ scale: 1.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tighter text-center text-primary mb-12 drop-shadow-[0_0_10px_currentColor] uppercase font-mokoto"
+        >
+          {title}
+        </motion.h1>
+
+        <motion.div 
+          initial={{ rotateX: 90, opacity: 0 }}
+          animate={{ rotateX: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="relative w-full bg-black/80 border border-primary/30 px-6 sm:px-10 py-10 rounded-xl backdrop-blur-md shadow-[0_0_30px_rgba(var(--primary-rgb),0.1)]"
+        >
+          {/* Tech Decorative Corners using Primary Color */}
+          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary"></div>
+          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-primary"></div>
+          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-primary"></div>
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary"></div>
+
+          {/* Decorative Images (Original Look Preserved) */}
+          <motion.img 
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }} 
+            transition={{ duration: 1, delay: 0.6 }}
+            className={`w-20 sm:w-28 absolute ${getImageClasses('img1')} drop-shadow-lg`}
+            src={images[0]} 
+            alt="Decorative 1" 
+          />
+          
+          <motion.img 
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 1, delay: 0.8 }}
+            className={`w-20 sm:w-28 absolute ${getImageClasses('img2')} drop-shadow-lg`}
+            src={images[1]} 
+            alt="Decorative 2" 
+          />
+
+          {/* Header Text */}
+          <div className="text-center mb-8 border-b border-primary/20 pb-4">
+            <h2 className="text-primary text-xl sm:text-2xl font-mono tracking-widest uppercase">
+              {/* ADJUSTED: Speed 30ms for a "typing" feel */}
+              <TypewriterText text={header} delay={0.8} speed={30} />
+            </h2>
+          </div>
+          
+          {/* Dynamic Content */}
+          <div className="min-h-[200px]">
+            {renderContent()}
+          </div>
+
+          {/* Footer / References */}
+          <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 1.5 }}
+              className="mt-12 pt-4 border-t border-primary/20"
+            >
+              <p className="text-xs text-primary/70 uppercase tracking-widest mb-2">Reference:</p>
+              {references.map((ref, index) => (
+                <div key={index} className="flex items-center gap-2 mb-1">
+                  <span className="w-1 h-1 bg-primary rounded-full"></span>
+                  <a
+                    href={ref.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs sm:text-sm text-white hover:text-primary transition-colors font-mono truncate"
+                  >
+                    {ref.text}
+                  </a>
+                </div>
+              ))}
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );
