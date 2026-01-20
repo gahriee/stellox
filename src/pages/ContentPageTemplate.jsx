@@ -238,7 +238,7 @@ function ContentPageTemplate({
           <img src={logo} alt="emblem" className="w-full h-full object-contain filter drop-shadow-[0_0_5px_currentColor] text-primary" />
         </motion.div>
         <div className="flex flex-col">
-           <span className="text-primary font-bold tracking-[0.1em] text-md">STELLOX INC.</span>
+           <span className="text-primary font-bold tracking-[0.1em] text-md">ASTRION INC.</span>
         </div>
       </motion.div>
 
