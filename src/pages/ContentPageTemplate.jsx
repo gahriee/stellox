@@ -9,6 +9,9 @@ function TypewriterText({ text, delay = 0, speed = 40, className = "" }) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startTyping, setStartTyping] = useState(false);
+  // We no longer need isTypingComplete for width changes, 
+  // but we keep the logic if you ever need to trigger other end-state effects.
+  const [isTypingComplete, setIsTypingComplete] = useState(false); 
 
   useEffect(() => {
     const delayTimeout = setTimeout(() => {
@@ -18,12 +21,16 @@ function TypewriterText({ text, delay = 0, speed = 40, className = "" }) {
   }, [delay]);
 
   useEffect(() => {
-    if (startTyping && currentIndex < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayedText(text.substring(0, currentIndex + 1));
-        setCurrentIndex((prev) => prev + 1);
-      }, speed);
-      return () => clearTimeout(timeout);
+    if (startTyping) {
+      if (currentIndex < text.length) {
+        const timeout = setTimeout(() => {
+          setDisplayedText(text.substring(0, currentIndex + 1));
+          setCurrentIndex((prev) => prev + 1);
+        }, speed);
+        return () => clearTimeout(timeout);
+      } else {
+        setIsTypingComplete(true);
+      }
     }
   }, [currentIndex, text, speed, startTyping]);
 
@@ -58,11 +65,12 @@ function TypewriterText({ text, delay = 0, speed = 40, className = "" }) {
   return (
     <p className={className}>
       {parseHtmlTags(displayedText)}
+      {/* UPDATED: Removed conditional width. It is now always w-[2px] (thin) */}
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: [0, 1, 0] }}
         transition={{ repeat: Infinity, duration: 0.8 }}
-        className="ml-1 inline-block w-2 h-5 bg-primary align-middle shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)]"
+        className="ml-1 inline-block h-5 w-[2px] bg-primary align-middle shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)]"
       />
     </p>
   );
@@ -83,7 +91,6 @@ function ContentPageTemplate({
     const img = new Image();
     img.src = bg;
     img.onload = () => {
-      // ADJUSTED: 1500ms (1.5s) - A balanced loading time
       setTimeout(() => setIsLoading(false), 1500);
     };
   }, []);
@@ -108,7 +115,7 @@ function ContentPageTemplate({
             key={`image-${index}`}
             initial={{ opacity: 0, scaleY: 0 }}
             animate={{ opacity: 1, scaleY: 1 }}
-            transition={{ duration: 0.5, delay: 1.2 }} // Moderate delay
+            transition={{ duration: 0.5, delay: 1.2 }}
             className="my-8 flex justify-center relative group"
           >
             {/* Tech Border Effect */}
@@ -137,7 +144,6 @@ function ContentPageTemplate({
               <li key={itemIndex} className="mb-3 pl-2 border-l-2 border-primary">
                 <TypewriterText 
                   text={listItem}
-                  // ADJUSTED: Staggered gently, speed increased to 10ms (readable but fast)
                   delay={1.0 + (itemIndex * 0.3)} 
                   speed={10} 
                   className="block text-justify text-white/90 font-mono"
@@ -153,16 +159,15 @@ function ContentPageTemplate({
         <TypewriterText 
           key={`text-${index}`}
           text={item}
-          // ADJUSTED: Delay set to 1.0s so it doesn't clash with the title animation
           delay={1.0} 
-          speed={5} // Kept super fast as requested
+          speed={5} 
           className="text-white/80 mt-4 text-sm sm:text-base md:text-lg break-words mb-4 text-justify font-sans leading-relaxed tracking-wide"
         />
       );
     });
   };
 
-  // --- LOADER: Hyperdrive Sequence ---
+  // --- LOADER ---
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 overflow-hidden relative">
@@ -170,7 +175,6 @@ function ContentPageTemplate({
           <motion.div 
             initial={{ width: 0 }} 
             animate={{ width: "100%" }} 
-            // ADJUSTED: Duration matches the 1.5s timeout
             transition={{ duration: 1.5 }}
             className="h-1 bg-primary mb-4 shadow-[0_0_10px_currentColor] text-primary" 
           />
@@ -209,7 +213,6 @@ function ContentPageTemplate({
   return (
     <div className="min-h-screen px-4 relative overflow-hidden font-sans text-gray-200">
       
-      {/* Background Image Restored */}
       <motion.img 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -219,10 +222,8 @@ function ContentPageTemplate({
         className="fixed top-0 left-0 object-cover -z-20 w-full h-full"
       />
       
-      {/* Overlay to ensure text readability on user BG */}
       <div className="fixed inset-0 bg-black/60 -z-10"></div>
 
-      {/* Floating Logo / Header */}
       <motion.div 
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -241,10 +242,8 @@ function ContentPageTemplate({
         </div>
       </motion.div>
 
-      {/* Main Content Card */}
       <div className="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-screen py-20 relative z-10">
         
-        {/* Title Crawl Style */}
         <motion.h1 
           initial={{ scale: 1.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -260,13 +259,11 @@ function ContentPageTemplate({
           transition={{ duration: 0.8, delay: 0.3 }}
           className="relative w-full bg-black/80 border border-primary/30 px-6 sm:px-10 py-10 rounded-xl backdrop-blur-md shadow-[0_0_30px_rgba(var(--primary-rgb),0.1)]"
         >
-          {/* Tech Decorative Corners using Primary Color */}
           <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary"></div>
           <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-primary"></div>
           <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-primary"></div>
           <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary"></div>
 
-          {/* Decorative Images (Original Look Preserved) */}
           <motion.img 
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }} 
@@ -285,20 +282,16 @@ function ContentPageTemplate({
             alt="Decorative 2" 
           />
 
-          {/* Header Text */}
           <div className="text-center mb-8 border-b border-primary/20 pb-4">
             <h2 className="text-primary text-xl sm:text-2xl font-mono tracking-widest uppercase">
-              {/* ADJUSTED: Speed 30ms for a "typing" feel */}
               <TypewriterText text={header} delay={0.8} speed={30} />
             </h2>
           </div>
           
-          {/* Dynamic Content */}
           <div className="min-h-[200px]">
             {renderContent()}
           </div>
 
-          {/* Footer / References */}
           <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
