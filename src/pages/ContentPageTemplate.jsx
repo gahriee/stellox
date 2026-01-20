@@ -195,23 +195,39 @@ function ContentPageTemplate({
     });
   };
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-center">
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900">
+      <div className="relative">
+        {/* Top Bracket */}
+        <motion.div 
+          initial={{ width: 0 }} 
+          animate={{ width: "100%" }} 
+          className="absolute -top-4 left-0 h-4 border-l-2 border-t-2 border-r-2 border-primary w-full" 
+        />
+        
+        {/* Center Content */}
+        <div className="flex items-center gap-4 px-8 py-4">
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ 
-              duration: 1.5, 
-              repeat: Infinity, 
-              ease: "linear" 
-            }}
-            className="w-16 h-16 border-4 border-t-primary border-r-secondary border-b-accent border-l-transparent rounded-full mx-auto mb-4"
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full"
           />
-          <p className="text-white text-lg font-medium">Loading cosmic experience...</p>
+          <div className="flex flex-col items-start">
+            <span className="text-white text-xl font-bold font-mono">SYSTEM_SYNC</span>
+            <span className="text-xs text-primary/70 font-mono">ESTABLISHING UPLINK...</span>
+          </div>
         </div>
+
+        {/* Bottom Bracket */}
+        <motion.div 
+          initial={{ width: 0 }} 
+          animate={{ width: "100%" }} 
+          className="absolute -bottom-4 left-0 h-4 border-l-2 border-b-2 border-r-2 border-primary w-full" 
+        />
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen px-4 relative overflow-hidden">
