@@ -1,0 +1,30 @@
+@import "tailwindcss";
+@font-face {
+  font-family: 'Squartiqa';
+  src: url('../public/fonts/squartiqa.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Mokoto';
+  src: url('../public/fonts/mokoto.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../public/fonts/inter.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@theme {
+  --color-primary: #f5d5e0;
+  --font-mokoto: "Mokoto", sans-serif;
+  --font-squartiqa: "Squartiqa", sans-serif;
+  --font-inter: "Inter", sans-serif;
+
+}
