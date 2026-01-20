@@ -24,6 +24,7 @@
 }
 @theme {
   --color-primary: #f5d5e0;
+  --color-secondary: #430d4b;
   --font-mokoto: "Mokoto", sans-serif;
   --font-squartiqa: "Squartiqa", sans-serif;
   --font-inter: "Inter", sans-serif;

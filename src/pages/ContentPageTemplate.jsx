@@ -174,7 +174,7 @@ function ContentPageTemplate({
                   text={listItem}
                   delay={1.1 + (itemIndex * 0.2)} 
                   speed={2}
-                  className="block text-justify"
+                  className="block text-justify text-secondary"
                 />
               </li>
             ))}
@@ -189,7 +189,7 @@ function ContentPageTemplate({
           text={item}
           delay={1.1} 
           speed={2}
-          className="mt-4 text-sm sm:text-base md:text-lg text-gray-700 break-words mb-2 sm:mb-2 text-justify"
+          className="text-secondary mt-4 text-sm sm:text-base md:text-lg break-words mb-2 sm:mb-2 text-justify"
         />
       );
     });
@@ -311,7 +311,7 @@ function ContentPageTemplate({
               whileHover={{ rotate: -10, scale: 1.1 }}
             />
 
-            <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 break-words mb-4 sm:mb-6 min-h-[2em] text-center font-mokoto">
+            <div className="text-secondary text-lg sm:text-xl md:text-2xl font-bold text-gray-800 break-words mb-4 sm:mb-6 min-h-[2em] text-center font-mokoto">
               <TypewriterText 
                 text={header} 
                 delay={0.8} 
