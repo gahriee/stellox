@@ -1,4 +1,8 @@
 @import "tailwindcss";
+
+body, html {
+  background-color: #332d43;
+}
 @font-face {
   font-family: 'Squartiqa';
   src: url('../public/fonts/squartiqa.ttf') format('truetype');
