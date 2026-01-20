@@ -110,6 +110,19 @@ function ContentPageTemplate({
   images,
   imagePositions = { img1: 'top-left', img2: 'bottom-right' }
 }) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [bgLoaded, setBgLoaded] = useState(false);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = bg;
+    img.onload = () => {
+      setBgLoaded(true);
+      setTimeout(() => setIsLoading(false), 300);
+    };
+  }, []);
+
+
   const getImageClasses = (positionKey) => {
     const positions = {
       'top-left': "-top-6 sm:-top-10 md:-top-12 -left-6 sm:-left-8 md:-left-12",
@@ -181,6 +194,24 @@ function ContentPageTemplate({
       );
     });
   };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ 
+              duration: 1.5, 
+              repeat: Infinity, 
+              ease: "linear" 
+            }}
+            className="w-16 h-16 border-4 border-t-primary border-r-secondary border-b-accent border-l-transparent rounded-full mx-auto mb-4"
+          />
+          <p className="text-white text-lg font-medium">Loading cosmic experience...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen px-4 relative overflow-hidden">
