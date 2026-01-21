@@ -5,7 +5,13 @@ import bg from '../assets/background.gif';
 import logo from '../assets/logo.png'; 
 
 // --- Utility: Typewriter Component ---
-function TypewriterText({ text, delay = 0, speed = 40, className = "", hideCursor = false }) {
+function TypewriterText({ 
+  text, 
+  delay = 0, 
+  speed = 40, 
+  className = "", 
+  showCursorAfter = false // Controls ONLY if cursor stays AFTER typing
+}) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startTyping, setStartTyping] = useState(false);
@@ -60,9 +66,14 @@ function TypewriterText({ text, delay = 0, speed = 40, className = "", hideCurso
     }).filter(Boolean);
   };
 
-  // Logic: Hide cursor if explicitly requested OR if text starts with <b> and ends with </b>
+  // --- REVISED CURSOR LOGIC ---
+  // 1. isBoldWrapped: Detects if the full text is wrapped in <b> tags
   const isBoldWrapped = typeof text === 'string' && text.trim().startsWith('<b>') && text.trim().endsWith('</b>');
-  const showCursor = !hideCursor && !isBoldWrapped;
+  
+  // 2. showCursor:
+  //    - ALWAYS show if typing is NOT complete (!isTypingComplete).
+  //    - AFTER typing is complete, show ONLY IF showCursorAfter is true AND it's not a bold title.
+  const showCursor = !isTypingComplete || (showCursorAfter && !isBoldWrapped);
 
   return (
     <p className={className}>
@@ -121,7 +132,6 @@ function ContentPageTemplate({
             transition={{ duration: 0.5, delay: 1.2 }}
             className="my-8 flex justify-center relative group"
           >
-            {/* Tech Border Effect */}
             <div className="absolute inset-0 border border-primary/40 opacity-50 rounded-lg pointer-events-none"></div>
             <img 
               src={item.src} 
@@ -150,7 +160,7 @@ function ContentPageTemplate({
                   delay={1.0 + (itemIndex * 0.3)} 
                   speed={10} 
                   className="block text-justify text-white/90 font-mono"
-                  hideCursor={true}
+                  showCursorAfter={false} // Removed lingering cursor for list items
                 />
               </li>
             ))}
@@ -159,11 +169,10 @@ function ContentPageTemplate({
       }
       
       // Regular Paragraph
-      // Check logic: Only show cursor if it is the last paragraph OR the next item is an object (image/list)
-      const nextItem = paragraphs[index + 1];
-      const isLastParagraph = index === paragraphs.length - 1;
-      const isNextItemObject = nextItem && typeof nextItem === 'object';
-      const shouldShowCursor = isLastParagraph || isNextItemObject;
+      // Check if this is the last paragraph OR if the next item is an object/list
+      const isLastItem = index === paragraphs.length - 1;
+      const nextItemIsObject = index < paragraphs.length - 1 && typeof paragraphs[index + 1] === 'object';
+      const shouldKeepCursor = isLastItem || nextItemIsObject;
 
       return (
         <TypewriterText 
@@ -172,7 +181,7 @@ function ContentPageTemplate({
           delay={1.0} 
           speed={5} 
           className="text-white/80 mt-4 text-sm sm:text-base md:text-lg break-words mb-4 text-justify font-sans leading-relaxed tracking-wide"
-          hideCursor={!shouldShowCursor}
+          showCursorAfter={shouldKeepCursor}
         />
       );
     });
@@ -295,12 +304,7 @@ function ContentPageTemplate({
 
           <div className="text-center mb-8 border-b border-primary/20 pb-4">
             <h2 className="text-primary text-xl sm:text-2xl font-mono tracking-widest uppercase">
-              <TypewriterText 
-                text={header} 
-                delay={0.8} 
-                speed={30} 
-                hideCursor={true} 
-              />
+              <TypewriterText text={header} delay={0.8} speed={30} showCursorAfter={false} />
             </h2>
           </div>
           
