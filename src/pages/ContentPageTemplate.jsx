@@ -66,7 +66,7 @@ function TypewriterText({
     }).filter(Boolean);
   };
 
-  // --- REVISED CURSOR LOGIC ---
+  // --- CURSOR LOGIC ---
   // 1. isBoldWrapped: Detects if the full text is wrapped in <b> tags
   const isBoldWrapped = typeof text === 'string' && text.trim().startsWith('<b>') && text.trim().endsWith('</b>');
   
@@ -121,7 +121,23 @@ function ContentPageTemplate({
 
   const renderContent = () => {
     return paragraphs.map((item, index) => {
-      // Image Object
+      
+      // --- LOGIC: Check Next Item ---
+      const isLastItem = index === paragraphs.length - 1;
+      const nextItem = index < paragraphs.length - 1 ? paragraphs[index + 1] : null;
+
+      // Check 1: Is the next item an Object? (List or Image)
+      const nextIsObject = typeof nextItem === 'object' && nextItem !== null;
+      
+      // Check 2: Is the next item a "Bold Header" Paragraph?
+      const nextIsBoldHeader = typeof nextItem === 'string' && 
+                               nextItem.trim().startsWith('<b>') && 
+                               nextItem.trim().endsWith('</b>');
+
+      // DECISION: Keep cursor if Last Item OR Next is Object OR Next is Bold Header
+      const shouldKeepCursor = isLastItem || nextIsObject || nextIsBoldHeader;
+
+      // 1. Image Object
       if (typeof item === 'object' && item.src) {
         const widthClass = item.size === 'half' ? 'w-1/2' : 'w-full';
         return (
@@ -132,16 +148,17 @@ function ContentPageTemplate({
             transition={{ duration: 0.5, delay: 1.2 }}
             className="my-8 flex justify-center relative group"
           >
+            <div className="absolute inset-0 border border-primary/40 opacity-50 rounded-lg pointer-events-none"></div>
             <img 
               src={item.src} 
               alt={item.alt || "Content"} 
-              className={`${widthClass} h-auto border-2 border-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)] bg-black/50 p-1`}
+              className={`${widthClass} h-auto border-2 border-primary/30 shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)] bg-black/50 p-1`}
             />
           </motion.div>
         );
       }
       
-      // List Object
+      // 2. List Object
       if (typeof item === 'object' && item.type === 'list') {
         const ListComponent = item.ordered ? motion.ol : motion.ul;
         return (
@@ -152,27 +169,28 @@ function ContentPageTemplate({
             transition={{ duration: 0.5, delay: 0.8 }} 
             className="p-0 mt-4 mb-6 text-sm sm:text-base md:text-lg text-white"
           >
-            {item.items.map((listItem, itemIndex) => (
-              <li key={itemIndex} className="mb-3 pl-2 border-l-2 border-primary">
-                <TypewriterText 
-                  text={listItem}
-                  delay={1.0 + (itemIndex * 0.3)} 
-                  speed={10} 
-                  className="block text-justify text-white/90 font-mono"
-                  showCursorAfter={false} // Removed lingering cursor for list items
-                />
-              </li>
-            ))}
+            {item.items.map((listItem, itemIndex) => {
+              // Only the very last item in the list should inherit the `shouldKeepCursor` logic
+              const isLastListItem = itemIndex === item.items.length - 1;
+              
+              return (
+                <li key={itemIndex} className="mb-3 pl-2 border-l-2 border-primary">
+                  <TypewriterText 
+                    text={listItem}
+                    delay={1.0 + (itemIndex * 0.3)} 
+                    speed={10} 
+                    className="block text-justify text-white/90 font-mono"
+                    // If last item in list, use parent block logic (shouldKeepCursor). Otherwise false.
+                    showCursorAfter={isLastListItem && shouldKeepCursor} 
+                  />
+                </li>
+              );
+            })}
           </ListComponent>
         );
       }
       
-      // Regular Paragraph
-      // Check if this is the last paragraph OR if the next item is an object/list
-      const isLastItem = index === paragraphs.length - 1;
-      const nextItemIsObject = index < paragraphs.length - 1 && typeof paragraphs[index + 1] === 'object';
-      const shouldKeepCursor = isLastItem || nextItemIsObject;
-
+      // 3. Regular Paragraph
       return (
         <TypewriterText 
           key={`text-${index}`}
