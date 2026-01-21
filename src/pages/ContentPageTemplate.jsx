@@ -5,12 +5,10 @@ import bg from '../assets/background.gif';
 import logo from '../assets/logo.png'; 
 
 // --- Utility: Typewriter Component ---
-function TypewriterText({ text, delay = 0, speed = 40, className = "" }) {
+function TypewriterText({ text, delay = 0, speed = 40, className = "", hideCursor = false }) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startTyping, setStartTyping] = useState(false);
-  // We no longer need isTypingComplete for width changes, 
-  // but we keep the logic if you ever need to trigger other end-state effects.
   const [isTypingComplete, setIsTypingComplete] = useState(false); 
 
   useEffect(() => {
@@ -62,16 +60,21 @@ function TypewriterText({ text, delay = 0, speed = 40, className = "" }) {
     }).filter(Boolean);
   };
 
+  // Logic: Hide cursor if explicitly requested OR if text starts with <b> and ends with </b>
+  const isBoldWrapped = typeof text === 'string' && text.trim().startsWith('<b>') && text.trim().endsWith('</b>');
+  const showCursor = !hideCursor && !isBoldWrapped;
+
   return (
     <p className={className}>
       {parseHtmlTags(displayedText)}
-      {/* UPDATED: Removed conditional width. It is now always w-[2px] (thin) */}
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 1, 0] }}
-        transition={{ repeat: Infinity, duration: 0.8 }}
-        className="ml-1 inline-block h-5 w-[2px] bg-primary align-middle shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)]"
-      />
+      {showCursor && (
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 1, 0] }}
+          transition={{ repeat: Infinity, duration: 0.8 }}
+          className="ml-1 inline-block h-5 w-[2px] bg-primary align-middle shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)]"
+        />
+      )}
     </p>
   );
 }
@@ -147,6 +150,7 @@ function ContentPageTemplate({
                   delay={1.0 + (itemIndex * 0.3)} 
                   speed={10} 
                   className="block text-justify text-white/90 font-mono"
+                  hideCursor={true}
                 />
               </li>
             ))}
@@ -155,6 +159,12 @@ function ContentPageTemplate({
       }
       
       // Regular Paragraph
+      // Check logic: Only show cursor if it is the last paragraph OR the next item is an object (image/list)
+      const nextItem = paragraphs[index + 1];
+      const isLastParagraph = index === paragraphs.length - 1;
+      const isNextItemObject = nextItem && typeof nextItem === 'object';
+      const shouldShowCursor = isLastParagraph || isNextItemObject;
+
       return (
         <TypewriterText 
           key={`text-${index}`}
@@ -162,6 +172,7 @@ function ContentPageTemplate({
           delay={1.0} 
           speed={5} 
           className="text-white/80 mt-4 text-sm sm:text-base md:text-lg break-words mb-4 text-justify font-sans leading-relaxed tracking-wide"
+          hideCursor={!shouldShowCursor}
         />
       );
     });
@@ -284,7 +295,12 @@ function ContentPageTemplate({
 
           <div className="text-center mb-8 border-b border-primary/20 pb-4">
             <h2 className="text-primary text-xl sm:text-2xl font-mono tracking-widest uppercase">
-              <TypewriterText text={header} delay={0.8} speed={30} />
+              <TypewriterText 
+                text={header} 
+                delay={0.8} 
+                speed={30} 
+                hideCursor={true} 
+              />
             </h2>
           </div>
           

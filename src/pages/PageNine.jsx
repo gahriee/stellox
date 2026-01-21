@@ -2,7 +2,7 @@
 import ContentPageTemplate from './ContentPageTemplate';
 import img7 from '../assets/img7.png';
 import img8 from '../assets/img8.png';
-import contentImg1 from '../assets/math.png';
+import contentImg1 from '../assets/math.jpg';
 function PageNine() {
   const contentProps = {
     title: "Rocket Parts",
