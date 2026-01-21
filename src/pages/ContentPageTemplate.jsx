@@ -132,11 +132,10 @@ function ContentPageTemplate({
             transition={{ duration: 0.5, delay: 1.2 }}
             className="my-8 flex justify-center relative group"
           >
-            <div className="absolute inset-0 border border-primary/40 opacity-50 rounded-lg pointer-events-none"></div>
             <img 
               src={item.src} 
               alt={item.alt || "Content"} 
-              className={`${widthClass} h-auto border-2 border-primary/30 shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)] bg-black/50 p-1`}
+              className={`${widthClass} h-auto border-2 border-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)] bg-black/50 p-1`}
             />
           </motion.div>
         );
