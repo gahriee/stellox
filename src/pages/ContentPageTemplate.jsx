@@ -139,7 +139,8 @@ function ContentPageTemplate({
 
       // 1. Image Object
       if (typeof item === 'object' && item.src) {
-        const widthClass = item.size === 'half' ? 'w-1/2' : 'w-full';
+        // UPDATED: Removed previous widthClass logic. 
+        // Added `w-full md:w-1/2` directly to the img className for responsive sizing.
         return (
           <motion.div
             key={`image-${index}`}
@@ -151,7 +152,7 @@ function ContentPageTemplate({
             <img 
               src={item.src} 
               alt={item.alt || "Content"} 
-              className={`${widthClass} h-auto border-2 border-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)] bg-black/50 p-1`}
+              className={`w-full md:w-1/2 h-auto border-2 border-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)] bg-black/50 p-1`}
             />
           </motion.div>
         );
