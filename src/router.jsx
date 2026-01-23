@@ -19,6 +19,7 @@ import PageEighteen from './pages/PageEighteen';
 import PageNineteen from './pages/PageNineteen';
 import NotYetReady from './pages/NotYetReady';
 import PageTwenty from './pages/PageTwenty';
+import PageFourteen from './pages/PageFourteen';
 import App from './App';
 
 const router = createBrowserRouter([
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
       {
         path: "/blast-from-the-hague",
         element: <PageThirteen />
+      },
+      {
+        path: "/the-first-strike-of-a-new-era-in-warfare",
+        element: <PageFourteen />
       },
       {
         path: "/gravity-and-rocket-flight",

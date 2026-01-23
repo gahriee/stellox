@@ -10,12 +10,21 @@ function TypewriterText({
   delay = 0, 
   speed = 40, 
   className = "", 
-  showCursorAfter = false // Controls ONLY if cursor stays AFTER typing
+  showCursorAfter = false 
 }) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startTyping, setStartTyping] = useState(false);
   const [isTypingComplete, setIsTypingComplete] = useState(false); 
+
+  // 1. Detect if the user wants this text centered
+  const hasCenterTag = typeof text === 'string' && text.includes('<center>');
+
+  // 2. Adjust the className dynamically
+  // If <center> is found, remove 'text-justify' and add 'text-center'
+  const appliedClassName = hasCenterTag 
+    ? className.replace('text-justify', 'text-center') 
+    : className;
 
   useEffect(() => {
     const delayTimeout = setTimeout(() => {
@@ -42,15 +51,17 @@ function TypewriterText({
     const parts = htmlText.split(/(<b>|<\/b>|<i>|<\/i>|<center>|<\/center>|<br>|\t)/);
     let isBold = false;
     let isItalic = false;
-    let isCenter = false;
 
     return parts.map((part, index) => {
       if (part === '<b>') { isBold = true; return null; }
       if (part === '</b>') { isBold = false; return null; }
       if (part === '<i>') { isItalic = true; return null; }
       if (part === '</i>') { isItalic = false; return null; }
-      if (part === '<center>') { isCenter = true; return null; }
-      if (part === '</center>') { isCenter = false; return null; }
+      
+      // 3. Just strip the <center> tags here. 
+      // We handled the alignment in the parent className above.
+      if (part === '<center>' || part === '</center>') { return null; }
+      
       if (part === '<br>') { return <br key={index} />; }
       if (part === '\t') { return <span key={index} className="inline-block w-8"></span>; }
 
@@ -58,25 +69,20 @@ function TypewriterText({
         let classes = "";
         if (isBold) classes += "font-bold text-primary "; 
         if (isItalic) classes += "italic ";
-        if (isCenter) classes += "block text-center w-full "; 
-
+        
+        // Note: No specific class needed for center here, as the parent <p> does it.
         return <span key={index} className={classes}>{part}</span>;
       }
       return null;
     }).filter(Boolean);
   };
 
-  // --- CURSOR LOGIC ---
-  // 1. isBoldWrapped: Detects if the full text is wrapped in <b> tags
   const isBoldWrapped = typeof text === 'string' && text.trim().startsWith('<b>') && text.trim().endsWith('</b>');
-  
-  // 2. showCursor:
-  //    - ALWAYS show if typing is NOT complete (!isTypingComplete).
-  //    - AFTER typing is complete, show ONLY IF showCursorAfter is true AND it's not a bold title.
   const showCursor = !isTypingComplete || (showCursorAfter && !isBoldWrapped);
 
   return (
-    <p className={className}>
+    // Use the `appliedClassName` here
+    <p className={appliedClassName}>
       {parseHtmlTags(displayedText)}
       {showCursor && (
         <motion.span
@@ -138,7 +144,7 @@ function ContentPageTemplate({
       const shouldKeepCursor = isLastItem || nextIsObject || nextIsBoldHeader;
 
       // 1. Image Object
-      if (typeof item === 'object' && item.src) {
+      if (typeof item === 'object' && item.src && item.alt) {
         // UPDATED: Removed previous widthClass logic. 
         // Added `w-full md:w-1/2` directly to the img className for responsive sizing.
         return (
@@ -190,6 +196,27 @@ function ContentPageTemplate({
         );
       }
       
+      if (typeof item === 'object' && item.type === 'video') {
+        return (
+          <motion.div
+            key={`video-${index}`}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 1.2 }}
+            className="my-8 w-full aspect-video border-2 border-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)] bg-black/50 p-1"
+          >
+            <iframe
+              className="w-full h-full"
+              src={item.src}
+              title={item.title || "Video player"}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            ></iframe>
+          </motion.div>
+        );
+      }
+
       // 3. Regular Paragraph
       return (
         <TypewriterText 
