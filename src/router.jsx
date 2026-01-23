@@ -18,6 +18,7 @@ import PageSeventeen from './pages/PageSeventeen';
 import PageEighteen from './pages/PageEighteen';
 import PageNineteen from './pages/PageNineteen';
 import NotYetReady from './pages/NotYetReady';
+import PageTwenty from './pages/PageTwenty';
 import App from './App';
 
 const router = createBrowserRouter([
@@ -96,6 +97,10 @@ const router = createBrowserRouter([
       {
         path: "/quiz-1",
         element: <PageNineteen />
+      },
+      {
+        path: "/quiz-2",
+        element: <PageTwenty />
       },
       {
         path: "/not-yet-ready",
