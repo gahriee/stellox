@@ -4,7 +4,7 @@ const PageNineteen = () => {
   return (
     <QuizTemplate 
       // 1. Navigation Links
-      quizUrl="https://quizizz.com/join/quiz/example-id" // Where "YES!" takes them
+      quizUrl="https://quizizz.com/join?gc=35469140" // Where "YES!" takes them
       backUrl="/not-yet-ready"                         // Where "Not Yet" takes them
 
       // 2. Custom Instructions (The prop we just added)
