@@ -2,7 +2,7 @@
 import ContentPageTemplate from './ContentPageTemplate';
 import img7 from '../assets/img7.png';
 import img8 from '../assets/img8.png';
-import contentImg1 from '../assets/math.jpg';
+import contentImg1 from '../assets/math10.png';
 function PageNine() {
   const contentProps = {
     title: "Rocket Parts",
@@ -28,7 +28,6 @@ function PageNine() {
         size: "half",
         alt: "Formula"
       },
-      "\t<b>Where:</b><br>\t<b><i>a</i></b> = acceleration of the rocket<br>\t<b><i>ve</i></b> = acceleration of the rocket<br>\t<b><i>m</i></b> = mass of the rocket<br>\t<b><i>Δm</i></b> = mass of gas ejected<br>\t<b><i>Δt</i></b> = time taken to eject that mass<br>\t<b><i>g</i></b> = acceleration due to gravity",
       "<b>What Affects a Rocket’s Acceleration?</b>",
       {
         type: 'list',

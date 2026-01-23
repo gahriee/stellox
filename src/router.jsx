@@ -9,6 +9,15 @@ import PageSeven from './pages/PageSeven';
 import PageEight from './pages/PageEight';
 import PageNine from './pages/PageNine';
 import PageTen from './pages/PageTen';
+import PageEleven from './pages/PageEleven';
+import PageTwelve from './pages/PageTwelve';
+import PageThirteen from './pages/PageThirteen';
+import PageFifteen from './pages/PageFifteen';
+import PageSixteen from './pages/PageSixteen';
+import PageSeventeen from './pages/PageSeventeen';
+import PageEighteen from './pages/PageEighteen';
+import PageNineteen from './pages/PageNineteen';
+import NotYetReady from './pages/NotYetReady';
 import App from './App';
 
 const router = createBrowserRouter([
@@ -55,6 +64,42 @@ const router = createBrowserRouter([
       {
         path: "/chemistry-in-combustion",
         element: <PageTen />
+      },
+      {
+        path: "/where-momentum-takes-off",
+        element: <PageEleven />
+      },
+      {
+        path: "/structural-system",
+        element: <PageTwelve />
+      },
+      {
+        path: "/blast-from-the-hague",
+        element: <PageThirteen />
+      },
+      {
+        path: "/gravity-and-rocket-flight",
+        element: <PageFifteen />
+      },
+      {
+        path: "/stages-of-a-rocket-launch",
+        element: <PageSixteen />
+      },
+      {
+        path: "/how-do-rockets-achieve-orbit",
+        element: <PageSeventeen />
+      },
+      {
+        path: "/rocket-facts",
+        element: <PageEighteen />
+      },
+      {
+        path: "/quiz-1",
+        element: <PageNineteen />
+      },
+      {
+        path: "/not-yet-ready",
+        element: <NotYetReady />
       }
     ]
   },

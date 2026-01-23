@@ -4,10 +4,9 @@ import img9 from '../assets/img9.png';
 import img10 from '../assets/img10.png';
 function PageTen() {
   const contentProps = {
-    title: "Rocket Parts",
-    header: "Chemistry in Combustion",
+    title: "Chemistry in Combustion",
+    header: "Types of Rocket Engines",
     paragraphs: [
-      "<b>Types of Rocket Engines (Liquid, Solid, Hybrid)</b>",
       {
         type: 'list',
         ordered: true,
