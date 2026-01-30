@@ -5,7 +5,7 @@ const PageTwenty = () => {
   return (
     <QuizTemplate 
       // 1. Navigation Links
-      quizUrl="https://quizizz.com/join?gc=19085140" // Where "YES!" takes them
+      quizUrl="https://wayground.com/join?gc=11522742" // Where "YES!" takes them
       backUrl="/not-yet-ready"                         // Where "Not Yet" takes them
 
       // 2. Custom Instructions (The prop we just added)
